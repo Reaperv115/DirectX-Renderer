@@ -16,25 +16,23 @@ bool Graphics::Initialize(HWND hwnd, int width, int height)
 
 void Graphics::Render()
 {
-	float bgcolor[] = { 0.0f, 0.0f, 0.0f, 1.0f };
+	float bgcolor[] = { 1.0f, 0.0f, 0.0f, 1.0f };
 	this->devicecontext->ClearRenderTargetView(this->rendertargetview.Get(), bgcolor);
 	this->devicecontext->ClearDepthStencilView(this->depthstencilView.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
 	this->devicecontext->IASetInputLayout(this->vertexshader.getLayout());
 	this->devicecontext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	this->devicecontext->OMSetDepthStencilState(this->depthstencilState.Get(), 0);
-
+	this->devicecontext->PSSetSamplers(0, 1, this->samplerState.GetAddressOf());
 	this->devicecontext->VSSetShader(this->vertexshader.getShader(), NULL, 0);
 	this->devicecontext->PSSetShader(this->pixelshader.getShader(), NULL, 0);
 
 	UINT stride = sizeof(Vertex);
 	UINT offset = 0;
 
-	this->devicecontext->IASetVertexBuffers(0, 1, vertexBuffer2.GetAddressOf(), &stride, &offset);
-	this->devicecontext->Draw(3, 0);
-
+	this->devicecontext->PSSetShaderResources(0, 1, this->texture.GetAddressOf());
 	this->devicecontext->IASetVertexBuffers(0, 1, vertexBuffer.GetAddressOf(), &stride, &offset);
-	this->devicecontext->Draw(3, 0);
+	this->devicecontext->Draw(6, 0);
 
 	
 
@@ -156,6 +154,34 @@ bool Graphics::InitializeDirectX(HWND hwnd, int width, int height)
 
 	this->devicecontext->RSSetViewports(1, &viewport);
 
+	// create rasterizer state
+	D3D11_RASTERIZER_DESC rasterizerDesc;
+	ZeroMemory(&rasterizerDesc, sizeof(D3D11_RASTERIZER_DESC));
+	rasterizerDesc.FillMode = D3D11_FILL_SOLID;
+	rasterizerDesc.CullMode = D3D11_CULL_BACK;
+	hr = this->device->CreateRasterizerState(&rasterizerDesc, this->rasterizerState.GetAddressOf());
+	if (FAILED(hr))
+	{
+		ErrorLogger::Log(hr, "Failed to create rasterizer state");
+		return false;
+	}
+
+	D3D11_SAMPLER_DESC sampleDesc;
+	ZeroMemory(&sampleDesc, sizeof(sampleDesc));
+	sampleDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+	sampleDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+	sampleDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+	sampleDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+	sampleDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
+	sampleDesc.MinLOD = 0;
+	sampleDesc.MaxLOD = D3D11_FLOAT32_MAX;
+	hr = this->device->CreateSamplerState(&sampleDesc, this->samplerState.GetAddressOf()); // create sampler state
+	if (FAILED(hr))
+	{
+		ErrorLogger::Log(hr, "Failed to create sampler state");
+		return false;
+	}
+
 	return true;
 }
 
@@ -183,7 +209,7 @@ bool Graphics::InitializeShaders()
 	D3D11_INPUT_ELEMENT_DESC layout[] =
 	{
 		{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
-		{"COLOR", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0}
+		{"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0}
 	};
 	UINT numElements = _ARRAYSIZE(layout);
 
@@ -202,9 +228,13 @@ bool Graphics::InitializeScene()
 	// red triangle
 	Vertex vertex[] =
 	{
-		Vertex(-0.5f, -0.5f, 1.0f, 1.0f, 0.0f, 0.0f), // bottom left
-		Vertex( 0.0f,  0.5f, 1.0f, 1.0f, 0.0f, 0.0f), // top middle
-		Vertex( 0.5f, -0.5f, 1.0f, 1.0f, 0.0f, 0.0f), // bottom right
+		Vertex(-0.5f, -0.5f, 1.0f, 0.0f, 1.0f), // bottom left
+		Vertex(-0.5f,  0.5f, 1.0f, 0.0f, 0.0f), // top left
+		Vertex( 0.5f,  0.5f, 1.0f, 1.0f, 0.0f), // top right
+
+		Vertex(-0.5f, -0.5f, 1.0f, 0.0f, 1.0f), // bottom left
+		Vertex(	0.5f,  0.5f, 1.0f, 1.0f, 0.0f), // top right
+		Vertex(	0.5f, -0.5f, 1.0f, 1.0f, 1.0f) // bottom right
 	};
 
 	D3D11_BUFFER_DESC vertexbufferDesc;
@@ -227,30 +257,12 @@ bool Graphics::InitializeScene()
 		return false;
 	}
 
-	//green triangle
-	Vertex vertex2[] =
-	{
-		Vertex(-0.25f, -0.25f, 0.0f, 0.0f, 1.0f, 0.0f), // bottom left
-		Vertex(0.0f,   0.25f, 0.0f, 0.0f, 1.0f, 0.0f), // top middle
-		Vertex(0.25f, -0.25f, 0.0f, 0.0f, 1.0f, 0.0f), // bottom right
-	};
-
-	ZeroMemory(&vertexbufferDesc, sizeof(vertexbufferDesc));
-
-	vertexbufferDesc.Usage = D3D11_USAGE_DEFAULT;
-	vertexbufferDesc.ByteWidth = sizeof(Vertex) * _ARRAYSIZE(vertex2);
-	vertexbufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-	vertexbufferDesc.CPUAccessFlags = 0;
-	vertexbufferDesc.MiscFlags = 0;
-
-	ZeroMemory(&vertexbufferData, sizeof(vertexbufferData));
-	vertexbufferData.pSysMem = vertex2;
-
-	hr = this->device->CreateBuffer(&vertexbufferDesc, &vertexbufferData, this->vertexBuffer2.GetAddressOf());
+	hr = DirectX::CreateWICTextureFromFile(this->device.Get(), L"textures/bloody slayer mark.jpg", nullptr, texture.GetAddressOf());
 	if (FAILED(hr))
 	{
-		ErrorLogger::Log(hr, "Failed to create vertex buffer");
+		ErrorLogger::Log(hr, "failed to create WICTexture");
 		return false;
 	}
+
 	return true;
 }

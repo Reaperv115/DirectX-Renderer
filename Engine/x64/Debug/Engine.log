@@ -1,4 +1,4 @@
 ﻿  Graphics.cpp
-E:\Dev\DirectX Engine\Engine\Graphics\Graphics.cpp(152,19): warning C4244: '=': conversion from 'int' to 'FLOAT', possible loss of data
-E:\Dev\DirectX Engine\Engine\Graphics\Graphics.cpp(153,20): warning C4244: '=': conversion from 'int' to 'FLOAT', possible loss of data
+E:\Dev\DirectX Engine\Engine\Graphics\Graphics.cpp(150,19): warning C4244: '=': conversion from 'int' to 'FLOAT', possible loss of data
+E:\Dev\DirectX Engine\Engine\Graphics\Graphics.cpp(151,20): warning C4244: '=': conversion from 'int' to 'FLOAT', possible loss of data
   Engine.vcxproj -> E:\Dev\DirectX Engine\x64\Debug\Engine.exe

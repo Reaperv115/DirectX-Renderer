@@ -12,14 +12,24 @@ bool RenderWindow::Initialize(WindowContainer* pwindowContainer, HINSTANCE hInst
 
 	this->RegisterWindowClass();
 
+	int centerScreenX = GetSystemMetrics(SM_CXSCREEN) / 2 - this->width / 2;
+	int centerScreenY = GetSystemMetrics(SM_CYSCREEN) / 2 - this->height / 2;
+
+	RECT wr; // window rectangle
+	wr.left = centerScreenX;
+	wr.top = centerScreenY;
+	wr.right = wr.left + this->width;
+	wr.bottom = wr.top + this->height;
+	AdjustWindowRect(&wr, WS_CAPTION | WS_MINIMIZEBOX | WS_SYSMENU, FALSE);
+
 	this->handle = CreateWindowEx(0,// extended window style, we are using the default
 		this->windowclassW.c_str(), // window class name
 		this->windowtitleW.c_str(), // window title
 		WS_CAPTION | WS_MINIMIZEBOX | WS_SYSMENU, // windows style
-		0, // window X position
-		0, // window Y position
-		this->width, // window width
-		this->height, // window height
+		wr.left, // window X position
+		wr.top, // window Y position
+		wr.right - wr.left, // window width
+		wr.bottom - wr.top, // window height
 		NULL, // handle to the parent of this window
 		NULL, // handle to menu or child window identifier. Can be set to NULL and menu in WindowClassEx
 		this->hInst, // handle to the instance of module to be used with this window

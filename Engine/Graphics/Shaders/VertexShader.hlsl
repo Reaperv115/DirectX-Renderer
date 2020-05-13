@@ -1,19 +1,19 @@
 struct VShaderIn
 {
-    float3 pos : POSITION;
-    float3 color : COLOR;
+    float3 inpos : POSITION;
+    float3 intexCoord : TEXCOORD;
 };
 
 struct PShaderIn
 {
-    float4 position : SV_Position;
-    float3 col : COLOR;
+    float4 outposition : SV_Position;
+    float2 outtexCoord : TEXCOORD;
 };
 
 PShaderIn main(VShaderIn input)
 {
     PShaderIn toPShader;
-    toPShader.position = float4(input.pos, 1.0f);
-    toPShader.col = input.color;
+    toPShader.outposition = float4(input.inpos, 1.0f);
+    toPShader.outtexCoord = input.intexCoord;
     return toPShader;
 }
