@@ -182,6 +182,7 @@
     <ClInclude Include="Utilities\ErrorLogger.h" />
     <ClInclude Include="Keyboard\KeyBoardEvent.h" />
     <ClInclude Include="Graphics\Vertex.h" />
+    <ClInclude Include="Graphics\VertexBuffer.h" />
     <ClInclude Include="Windows\RenderWindow.h" />
     <ClInclude Include="Utilities\StringConverter.h" />
     <ClInclude Include="Windows\WindowContainer.h" />

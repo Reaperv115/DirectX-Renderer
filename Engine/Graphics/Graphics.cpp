@@ -27,12 +27,13 @@ void Graphics::Render()
 	this->devicecontext->VSSetShader(this->vertexshader.getShader(), NULL, 0);
 	this->devicecontext->PSSetShader(this->pixelshader.getShader(), NULL, 0);
 
-	UINT stride = sizeof(Vertex);
 	UINT offset = 0;
 
 	this->devicecontext->PSSetShaderResources(0, 1, this->texture.GetAddressOf());
-	this->devicecontext->IASetVertexBuffers(0, 1, vertexBuffer.GetAddressOf(), &stride, &offset);
-	this->devicecontext->Draw(6, 0);
+	this->devicecontext->IASetVertexBuffers(0, 1, vertexBuffer.GetAddressOf(), vertexBuffer.StridePtr(), &offset);
+	this->devicecontext->IASetIndexBuffer(indicesBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
+
+	this->devicecontext->DrawIndexed(6, 0, 0);
 
 	
 
@@ -228,34 +229,47 @@ bool Graphics::InitializeScene()
 	// red triangle
 	Vertex vertex[] =
 	{
-		Vertex(-0.5f, -0.5f, 1.0f, 0.0f, 1.0f), // bottom left
-		Vertex(-0.5f,  0.5f, 1.0f, 0.0f, 0.0f), // top left
-		Vertex( 0.5f,  0.5f, 1.0f, 1.0f, 0.0f), // top right
-
-		Vertex(-0.5f, -0.5f, 1.0f, 0.0f, 1.0f), // bottom left
-		Vertex(	0.5f,  0.5f, 1.0f, 1.0f, 0.0f), // top right
-		Vertex(	0.5f, -0.5f, 1.0f, 1.0f, 1.0f) // bottom right
+		Vertex(-0.5f, -0.5f, 1.0f, 0.0f, 1.0f), // bottom left - 0
+		Vertex(-0.5f,  0.5f, 1.0f, 0.0f, 0.0f), // top left    - 1
+		Vertex( 0.5f,  0.5f, 1.0f, 1.0f, 0.0f), // top right   - 2
+		Vertex(	0.5f, -0.5f, 1.0f, 1.0f, 1.0f) // bottom right - 3
 	};
 
-	D3D11_BUFFER_DESC vertexbufferDesc;
-	ZeroMemory(&vertexbufferDesc, sizeof(vertexbufferDesc));
+	DWORD indices[] =
+	{
+		0, 1, 2,
+		0, 2, 3
+	};
 
-	vertexbufferDesc.Usage = D3D11_USAGE_DEFAULT;
-	vertexbufferDesc.ByteWidth = sizeof(Vertex) * _ARRAYSIZE(vertex);
-	vertexbufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-	vertexbufferDesc.CPUAccessFlags = 0;
-	vertexbufferDesc.MiscFlags = 0;
-
-	D3D11_SUBRESOURCE_DATA vertexbufferData;
-	ZeroMemory(&vertexbufferData, sizeof(vertexbufferData));
-	vertexbufferData.pSysMem = vertex;
-
-	HRESULT hr = this->device->CreateBuffer(&vertexbufferDesc, &vertexbufferData, this->vertexBuffer.GetAddressOf());
+	HRESULT hr = this->vertexBuffer.Initialize(this->device.Get(), vertex, _ARRAYSIZE(vertex));
 	if (FAILED(hr))
 	{
 		ErrorLogger::Log(hr, "Failed to create vertex buffer");
 		return false;
 	}
+
+
+	D3D11_BUFFER_DESC indicesbufferDesc;
+	ZeroMemory(&indicesbufferDesc, sizeof(indicesbufferDesc));
+
+	indicesbufferDesc.Usage = D3D11_USAGE_DEFAULT;
+	indicesbufferDesc.ByteWidth = sizeof(DWORD) * _ARRAYSIZE(indices);
+	indicesbufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+	indicesbufferDesc.CPUAccessFlags = 0;
+	indicesbufferDesc.MiscFlags = 0;
+
+	D3D11_SUBRESOURCE_DATA indicesbufferData;
+	ZeroMemory(&indicesbufferData, sizeof(indicesbufferData));
+	indicesbufferData.pSysMem = indices;
+
+	hr = this->device->CreateBuffer(&indicesbufferDesc, &indicesbufferData, indicesBuffer.GetAddressOf());
+	if (FAILED(hr))
+	{
+		ErrorLogger::Log(hr, "Failed to create vertex buffer");
+		return false;
+	}
+
+	
 
 	hr = DirectX::CreateWICTextureFromFile(this->device.Get(), L"textures/bloody slayer mark.jpg", nullptr, texture.GetAddressOf());
 	if (FAILED(hr))

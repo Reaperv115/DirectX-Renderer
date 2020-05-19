@@ -6,6 +6,12 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInst,
 	_In_ LPWSTR cmdLine,
 	_In_ int cmdShow)
 {
+	HRESULT hr = CoInitialize(NULL);
+	if (FAILED(hr))
+	{
+		ErrorLogger::Log(hr, "Failed to call CoInitialize");
+		return -1;
+	}
 	Engine engine;
 	if (engine.Initialize(hInst, "Engine", "Engine", 1280, 800))
 	{
