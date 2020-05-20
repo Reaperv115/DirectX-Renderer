@@ -1,6 +1,6 @@
 ﻿  Graphics.cpp
-E:\Dev\DirectX Engine\Engine\Graphics\Graphics.cpp(160,19): warning C4244: '=': conversion from 'int' to 'FLOAT', possible loss of data
-E:\Dev\DirectX Engine\Engine\Graphics\Graphics.cpp(161,20): warning C4244: '=': conversion from 'int' to 'FLOAT', possible loss of data
+E:\Dev\DirectX Engine\Engine\Graphics\Graphics.cpp(159,19): warning C4244: '=': conversion from 'int' to 'FLOAT', possible loss of data
+E:\Dev\DirectX Engine\Engine\Graphics\Graphics.cpp(160,20): warning C4244: '=': conversion from 'int' to 'FLOAT', possible loss of data
 E:\Visual Studio 2019\VC\Tools\MSVC\14.26.28801\include\memory(2067,59): warning C4267: 'initializing': conversion from 'size_t' to '_Ty', possible loss of data
           with
           [
@@ -12,7 +12,7 @@ E:\Dev\DirectX Engine\Engine\Graphics\VertexBuffer.h(44): message : while compil
           [
               T=Vertex
           ]
-E:\Dev\DirectX Engine\Engine\Graphics\Graphics.cpp(247): message : see reference to function template instantiation 'HRESULT VertexBuffer<Vertex>::Initialize(ID3D11Device *,T *,UINT)' being compiled
+E:\Dev\DirectX Engine\Engine\Graphics\Graphics.cpp(246): message : see reference to function template instantiation 'HRESULT VertexBuffer<Vertex>::Initialize(ID3D11Device *,T *,UINT)' being compiled
           with
           [
               T=Vertex
