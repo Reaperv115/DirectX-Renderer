@@ -1,7 +1,8 @@
+//#pragma pack_matrix(row_major) uncomment to enable row-major matrix math
+
 cbuffer Matrices : register(b0)
 {
-    float xOffset;
-    float yOffset;
+    float4x4 mat;
 }
 
 struct VShaderIn
@@ -20,10 +21,7 @@ PShaderIn main(VShaderIn input)
 {
     PShaderIn toPShader;
     
-    input.inpos.x += xOffset;
-    input.inpos.y += yOffset;
-    
-    toPShader.outposition = float4(input.inpos, 1.0f);
+    toPShader.outposition = mul(float4(input.inpos, 1.0f), mat);
     toPShader.outtexCoord = input.intexCoord;
     return toPShader;
 }

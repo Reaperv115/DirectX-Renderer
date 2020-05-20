@@ -2,7 +2,10 @@
 
 bool Graphics::Initialize(HWND hwnd, int width, int height)
 {
-	if (!InitializeDirectX(hwnd, width, height))
+	this->windowwidth = width;
+	this->windowheight = height;
+
+	if (!InitializeDirectX(hwnd))
 		return false;
 
 	if (!InitializeShaders())
@@ -28,10 +31,30 @@ void Graphics::Render()
 	this->devicecontext->PSSetShader(this->pixelshader.getShader(), NULL, 0);
 
 	UINT offset = 0;
-	static float yOff = 0.5f;
-	yOff -= 0.01f;
-	constantBuffer.data.xOffset = 0.0f;
-	constantBuffer.data.yOffset = yOff;
+
+	DirectX::XMMATRIX world = DirectX::XMMatrixIdentity();
+
+	// creating view matrix
+	static DirectX::XMVECTOR eyePos = DirectX::XMVectorSet(0.0f, 1.0f, -2.0f, 0.0f);
+	DirectX::XMFLOAT3 eyeposFloat3;
+	DirectX::XMStoreFloat3(&eyeposFloat3, eyePos);
+	eyeposFloat3.y += 0.001f;
+	eyePos = DirectX::XMLoadFloat3(&eyeposFloat3);
+	static DirectX::XMVECTOR lookatPos = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
+	static DirectX::XMVECTOR upVector = DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
+	DirectX::XMMATRIX view = DirectX::XMMatrixLookAtLH(eyePos, lookatPos, upVector);
+
+	// creating projection matrix
+	float FoVDegs = 90.0f;
+	float FoVRads = (FoVDegs / 360.0f) * DirectX::XM_2PI;
+	float aspectRat = static_cast<float>(this->windowwidth) / static_cast<float>(this->windowheight);
+	float nearZ = 0.1f;
+	float farZ = 1000.0f;
+	DirectX::XMMATRIX projection = DirectX::XMMatrixPerspectiveFovLH(FoVRads, aspectRat, nearZ, farZ);
+
+	constantBuffer.data.mat = world * view * projection;
+	constantBuffer.data.mat = DirectX::XMMatrixTranspose(constantBuffer.data.mat);
+
 	if (!constantBuffer.ApplyChanges())
 		return;
 
@@ -48,7 +71,7 @@ void Graphics::Render()
 	this->swapchain->Present(1, NULL);
 }
 
-bool Graphics::InitializeDirectX(HWND hwnd, int width, int height)
+bool Graphics::InitializeDirectX(HWND hwnd)
 {
 	std::vector<AdapterData> adapters = ReadAdapter::getAdapters();
 
@@ -60,8 +83,8 @@ bool Graphics::InitializeDirectX(HWND hwnd, int width, int height)
 	DXGI_SWAP_CHAIN_DESC swapchaindescription;
 	ZeroMemory(&swapchaindescription, sizeof(DXGI_SWAP_CHAIN_DESC));
 
-	swapchaindescription.BufferDesc.Width = width;
-	swapchaindescription.BufferDesc.Height = height;
+	swapchaindescription.BufferDesc.Width = this->windowwidth;
+	swapchaindescription.BufferDesc.Height = this->windowheight;
 	swapchaindescription.BufferDesc.RefreshRate.Numerator = 60;
 	swapchaindescription.BufferDesc.RefreshRate.Denominator = 1;
 	swapchaindescription.BufferDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
@@ -114,8 +137,8 @@ bool Graphics::InitializeDirectX(HWND hwnd, int width, int height)
 	}
 
 	D3D11_TEXTURE2D_DESC depthstencildesc;
-	depthstencildesc.Width = width;
-	depthstencildesc.Height = height;
+	depthstencildesc.Width = this->windowwidth;
+	depthstencildesc.Height = this->windowheight;
 	depthstencildesc.MipLevels = 1;
 	depthstencildesc.ArraySize = 1;
 	depthstencildesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
@@ -156,8 +179,8 @@ bool Graphics::InitializeDirectX(HWND hwnd, int width, int height)
 
 	viewport.TopLeftX = 0;
 	viewport.TopLeftY = 0;
-	viewport.Width = width;
-	viewport.Height = height;
+	viewport.Width = this->windowwidth;
+	viewport.Height = this->windowheight;
 	viewport.MinDepth = 0.0f;
 	viewport.MaxDepth = 1.0f;
 
@@ -237,10 +260,10 @@ bool Graphics::InitializeScene()
 	// red triangle
 	Vertex vertex[] =
 	{
-		Vertex(-0.5f, -0.5f, 1.0f, 0.0f, 1.0f), // bottom left - 0
-		Vertex(-0.5f,  0.5f, 1.0f, 0.0f, 0.0f), // top left    - 1
-		Vertex( 0.5f,  0.5f, 1.0f, 1.0f, 0.0f), // top right   - 2
-		Vertex(	0.5f, -0.5f, 1.0f, 1.0f, 1.0f) // bottom right - 3
+		Vertex(-0.5f, -0.5f, 0.0f, 0.0f, 1.0f), // bottom left - 0
+		Vertex(-0.5f,  0.5f, 0.0f, 0.0f, 0.0f), // top left    - 1
+		Vertex( 0.5f,  0.5f, 0.0f, 1.0f, 0.0f), // top right   - 2
+		Vertex(	0.5f, -0.5f, 0.0f, 1.0f, 1.0f) // bottom right - 3
 	};
 
 	HRESULT hr = this->vertexBuffer.Initialize(this->device.Get(), vertex, _ARRAYSIZE(vertex));

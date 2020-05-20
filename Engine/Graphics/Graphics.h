@@ -13,7 +13,7 @@ public:
 	bool Initialize(HWND hwnd, int width, int height);
 	void Render();
 private:
-	bool InitializeDirectX(HWND hwnd, int width, int height);
+	bool InitializeDirectX(HWND hwnd);
 	bool InitializeShaders();
 	bool InitializeScene();
 
@@ -35,5 +35,8 @@ private:
 	Microsoft::WRL::ComPtr<ID3D11RasterizerState> rasterizerState;
 	Microsoft::WRL::ComPtr<ID3D11SamplerState> samplerState;
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> texture;
+
+	int windowwidth;
+	int windowheight;
 };
 
