@@ -1,7 +1,7 @@
 ﻿  Graphics.cpp
-E:\Dev\DirectX Engine\Engine\Graphics\Graphics.cpp(151,19): warning C4244: '=': conversion from 'int' to 'FLOAT', possible loss of data
-E:\Dev\DirectX Engine\Engine\Graphics\Graphics.cpp(152,20): warning C4244: '=': conversion from 'int' to 'FLOAT', possible loss of data
-E:\Visual Studio 2019\VC\Tools\MSVC\14.25.28610\include\memory(2063,59): warning C4267: 'initializing': conversion from 'size_t' to '_Ty', possible loss of data
+E:\Dev\DirectX Engine\Engine\Graphics\Graphics.cpp(160,19): warning C4244: '=': conversion from 'int' to 'FLOAT', possible loss of data
+E:\Dev\DirectX Engine\Engine\Graphics\Graphics.cpp(161,20): warning C4244: '=': conversion from 'int' to 'FLOAT', possible loss of data
+E:\Visual Studio 2019\VC\Tools\MSVC\14.26.28801\include\memory(2067,59): warning C4267: 'initializing': conversion from 'size_t' to '_Ty', possible loss of data
           with
           [
               _Ty=UINT
@@ -12,15 +12,10 @@ E:\Dev\DirectX Engine\Engine\Graphics\VertexBuffer.h(44): message : while compil
           [
               T=Vertex
           ]
-E:\Dev\DirectX Engine\Engine\Graphics\Graphics.cpp(244): message : see reference to function template instantiation 'HRESULT VertexBuffer<Vertex>::Initialize(ID3D11Device *,T *,UINT)' being compiled
+E:\Dev\DirectX Engine\Engine\Graphics\Graphics.cpp(247): message : see reference to function template instantiation 'HRESULT VertexBuffer<Vertex>::Initialize(ID3D11Device *,T *,UINT)' being compiled
           with
           [
               T=Vertex
           ]
-E:\Dev\DirectX Engine\Engine\Graphics\Graphics.h(26): message : see reference to class template instantiation 'VertexBuffer<Vertex>' being compiled
-  main.cpp
-  WindowContainer.cpp
-E:\Dev\DirectX Engine\Engine\Windows\WindowContainer.cpp(141,134): warning C4390: ';': empty controlled statement found; is this the intent?
-  Generating Code...
-E:\Dev\DirectX Engine\Engine\Windows\WindowContainer.cpp(156): warning C4715: 'WindowContainer::WindowProc': not all control paths return a value
+E:\Dev\DirectX Engine\Engine\Graphics\Graphics.h(29): message : see reference to class template instantiation 'VertexBuffer<Vertex>' being compiled
   Engine.vcxproj -> E:\Dev\DirectX Engine\x64\Debug\Engine.exe

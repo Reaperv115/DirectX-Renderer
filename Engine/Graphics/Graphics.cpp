@@ -29,11 +29,20 @@ void Graphics::Render()
 
 	UINT offset = 0;
 
+	CB_VS_VertexShader data;
+	data.xOffset = 0.0f;
+	data.yOffset = 0.5f;
+	D3D11_MAPPED_SUBRESOURCE mappedResource;
+	HRESULT hr = this->devicecontext->Map(constantBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	CopyMemory(mappedResource.pData, &data, sizeof(CB_VS_VertexShader));
+	this->devicecontext->Unmap(constantBuffer.Get(), 0);
+	this->devicecontext->VSSetConstantBuffers(0, 1, constantBuffer.GetAddressOf());
+
 	this->devicecontext->PSSetShaderResources(0, 1, this->texture.GetAddressOf());
 	this->devicecontext->IASetVertexBuffers(0, 1, vertexBuffer.GetAddressOf(), vertexBuffer.StridePtr(), &offset);
 	this->devicecontext->IASetIndexBuffer(indicesBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
 
-	this->devicecontext->DrawIndexed(6, 0, 0);
+	this->devicecontext->DrawIndexed(indicesBuffer.BufferSize(), 0, 0);
 
 	
 
@@ -235,12 +244,6 @@ bool Graphics::InitializeScene()
 		Vertex(	0.5f, -0.5f, 1.0f, 1.0f, 1.0f) // bottom right - 3
 	};
 
-	DWORD indices[] =
-	{
-		0, 1, 2,
-		0, 2, 3
-	};
-
 	HRESULT hr = this->vertexBuffer.Initialize(this->device.Get(), vertex, _ARRAYSIZE(vertex));
 	if (FAILED(hr))
 	{
@@ -248,21 +251,15 @@ bool Graphics::InitializeScene()
 		return false;
 	}
 
+	DWORD indices[] =
+	{
+		0, 1, 2,
+		0, 2, 3
+	};
 
-	D3D11_BUFFER_DESC indicesbufferDesc;
-	ZeroMemory(&indicesbufferDesc, sizeof(indicesbufferDesc));
+	
 
-	indicesbufferDesc.Usage = D3D11_USAGE_DEFAULT;
-	indicesbufferDesc.ByteWidth = sizeof(DWORD) * _ARRAYSIZE(indices);
-	indicesbufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
-	indicesbufferDesc.CPUAccessFlags = 0;
-	indicesbufferDesc.MiscFlags = 0;
-
-	D3D11_SUBRESOURCE_DATA indicesbufferData;
-	ZeroMemory(&indicesbufferData, sizeof(indicesbufferData));
-	indicesbufferData.pSysMem = indices;
-
-	hr = this->device->CreateBuffer(&indicesbufferDesc, &indicesbufferData, indicesBuffer.GetAddressOf());
+	hr = this->indicesBuffer.Initialize(this->device.Get(), indices, _ARRAYSIZE(indices));
 	if (FAILED(hr))
 	{
 		ErrorLogger::Log(hr, "Failed to create vertex buffer");
@@ -270,11 +267,27 @@ bool Graphics::InitializeScene()
 	}
 
 	
-
+	// load texture
 	hr = DirectX::CreateWICTextureFromFile(this->device.Get(), L"textures/bloody slayer mark.jpg", nullptr, texture.GetAddressOf());
 	if (FAILED(hr))
 	{
 		ErrorLogger::Log(hr, "failed to create WICTexture");
+		return false;
+	}
+
+	// Initialize constant buffer(s)
+	D3D11_BUFFER_DESC desc;
+	desc.Usage = D3D11_USAGE_DYNAMIC;
+	desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	desc.MiscFlags = 0;
+	desc.ByteWidth = static_cast<UINT>(sizeof(CB_VS_VertexShader) + (16 - (sizeof(CB_VS_VertexShader) % 16)));
+	desc.StructureByteStride = 0;
+
+	hr = device->CreateBuffer(&desc, 0, constantBuffer.GetAddressOf());
+	if (FAILED(hr))
+	{
+		ErrorLogger::Log(hr, "Failed to initialize the constant buffer");
 		return false;
 	}
 

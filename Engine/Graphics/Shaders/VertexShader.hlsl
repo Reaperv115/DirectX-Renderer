@@ -1,3 +1,9 @@
+cbuffer Matrices : register(b0)
+{
+    float xOffset;
+    float yOffset;
+}
+
 struct VShaderIn
 {
     float3 inpos : POSITION;
@@ -13,6 +19,10 @@ struct PShaderIn
 PShaderIn main(VShaderIn input)
 {
     PShaderIn toPShader;
+    
+    input.inpos.x += xOffset;
+    input.inpos.y += yOffset;
+    
     toPShader.outposition = float4(input.inpos, 1.0f);
     toPShader.outtexCoord = input.intexCoord;
     return toPShader;
