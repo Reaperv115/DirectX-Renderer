@@ -51,7 +51,7 @@ unsigned char Keyboard::readChar()
 
 void Keyboard::onkeyPressed(const unsigned char key)
 {
-	this->keyStates[key] = false;
+	this->keyStates[key] = true;
 	this->keyBuffer.push(keyboardEvent(keyboardEvent::EventType::Press, key));
 }
 

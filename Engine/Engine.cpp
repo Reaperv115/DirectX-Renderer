@@ -31,16 +31,40 @@ void Engine::Update()
 	while (!mouse.eventbufferisEmpty())
 	{
 		MouseEvent me = mouse.readEvent();
-		if (me.getType() == MouseEvent::EventType::RAW_MOVE)
+		if (mouse.isrightDown())
 		{
-			std::string msg = "X: ";
-			msg += std::to_string(me.GetPosX());
-			msg += ", ";
-			msg += "Y: ";
-			msg += std::to_string(me.GetPosY());
-			msg += "\n";
-			OutputDebugStringA(msg.c_str());
+			if (me.getType() == MouseEvent::EventType::RAW_MOVE)
+			{
+				this->gfx.camera.adjustRotation((float)me.GetPosY() * 0.01f, (float)me.GetPosX() * 0.01f, 0);
+			}
 		}
+	}
+
+	const float cameraSpeed = 0.02f;
+
+	if (keyboard.keyisPressed('W'))
+	{
+		this->gfx.camera.adjustPosition(this->gfx.camera.getforwardVector() * cameraSpeed);
+	}
+	if (keyboard.keyisPressed('S'))
+	{
+		this->gfx.camera.adjustPosition(this->gfx.camera.getbackwardVector() * cameraSpeed);
+	}
+	if (keyboard.keyisPressed('A'))
+	{
+		this->gfx.camera.adjustPosition(this->gfx.camera.getleftVector() * cameraSpeed);
+	}
+	if (keyboard.keyisPressed('D'))
+	{
+		this->gfx.camera.adjustPosition(this->gfx.camera.getrightVector() * cameraSpeed);
+	}
+	if (keyboard.keyisPressed(VK_SPACE))
+	{
+		this->gfx.camera.adjustPosition(0.0f, cameraSpeed, 0.0f);
+	}
+	if (keyboard.keyisPressed('Z'))
+	{
+		this->gfx.camera.adjustPosition(0.0f, -cameraSpeed, 0.0f);
 	}
 }
 

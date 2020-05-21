@@ -6,12 +6,14 @@
 #include "VertexBuffer.h"
 #include "IndexBuffer.h"
 #include "ConstantBuffer.h"
+#include "Camera.h"
 
 class Graphics
 {
 public:
 	bool Initialize(HWND hwnd, int width, int height);
 	void Render();
+	Camera camera;
 private:
 	bool InitializeDirectX(HWND hwnd);
 	bool InitializeShaders();
@@ -38,5 +40,7 @@ private:
 
 	int windowwidth;
 	int windowheight;
+
+	
 };
 
