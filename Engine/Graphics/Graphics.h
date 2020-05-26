@@ -7,6 +7,10 @@
 #include "IndexBuffer.h"
 #include "ConstantBuffer.h"
 #include "Camera.h"
+#include "ImGUI/imgui.h"
+#include "ImGUI/imgui_impl_win32.h"
+#include "ImGUI/imgui_impl_dx11.h"
+#include "../Engine/Model.h"
 
 class Graphics
 {
@@ -31,6 +35,11 @@ private:
 	VertexBuffer<Vertex> vertexBuffer;
 	IndexBuffer indicesBuffer;
 
+	VertexShader cubevertexShader;
+	PixelShader cubepixelShader;
+	VertexBuffer<Vertex> cubevertexBuffer;
+	IndexBuffer cubeindexBuffer;
+
 	Microsoft::WRL::ComPtr<ID3D11DepthStencilView> depthstencilView;
 	Microsoft::WRL::ComPtr<ID3D11Texture2D> depthstencilBuffer;
 	Microsoft::WRL::ComPtr<ID3D11DepthStencilState> depthstencilState;
@@ -41,6 +50,9 @@ private:
 	int windowwidth;
 	int windowheight;
 
-	
+	Model model;
+	std::vector<DirectX::XMFLOAT3> vertexes;
+	std::vector<DirectX::XMFLOAT2> UVs;
+	std::vector<DirectX::XMFLOAT3> normals;
 };
 

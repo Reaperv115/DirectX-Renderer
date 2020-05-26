@@ -14,6 +14,14 @@ bool Graphics::Initialize(HWND hwnd, int width, int height)
 	if (!InitializeScene())
 		return false;
 
+	// SETUP IMGUI
+	IMGUI_CHECKVERSION();
+	ImGui::CreateContext();
+	ImGuiIO& io = ImGui::GetIO();
+	ImGui_ImplWin32_Init(hwnd);
+	ImGui_ImplDX11_Init(this->device.Get(), this->devicecontext.Get());
+	ImGui::StyleColorsDark();
+
 	return true;
 }
 
@@ -47,7 +55,20 @@ void Graphics::Render()
 
 	this->devicecontext->DrawIndexed(indicesBuffer.BufferSize(), 0, 0);
 
-	
+	// start the Dear ImGui frame
+	ImGui_ImplDX11_NewFrame();
+	ImGui_ImplWin32_NewFrame();
+	ImGui::NewFrame();
+
+	//create ImGui test window
+	ImGui::Begin("Test");
+	ImGui::End();
+
+	// Assemble together draw data
+	ImGui::Render();
+
+	// render draw data
+	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 
 	this->swapchain->Present(1, NULL);
 }
@@ -247,6 +268,7 @@ bool Graphics::InitializeScene()
 		Vertex(	0.5f, -0.5f, 0.0f, 1.0f, 1.0f) // bottom right - 3
 	};
 
+
 	HRESULT hr = this->vertexBuffer.Initialize(this->device.Get(), vertex, _ARRAYSIZE(vertex));
 	if (FAILED(hr))
 	{
@@ -275,6 +297,13 @@ bool Graphics::InitializeScene()
 	if (FAILED(hr))
 	{
 		ErrorLogger::Log(hr, "failed to create WICTexture");
+		return false;
+	}
+
+	bool load = model.LoadModel("../Engine/meshes/cube.obj", vertexes, UVs, normals);
+	if (!load)
+	{
+		ErrorLogger::Log("Failed to load mesh object");
 		return false;
 	}
 

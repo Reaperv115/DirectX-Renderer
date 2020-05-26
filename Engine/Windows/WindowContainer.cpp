@@ -20,9 +20,13 @@ WindowContainer::WindowContainer()
 		rawinputInitialized = true;
 	}
 }
+extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 LRESULT WindowContainer::WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
+	if (ImGui_ImplWin32_WndProcHandler(hwnd, uMsg, wParam, lParam))
+		return true;
+
 	switch (uMsg)
 	{
 	case WM_KEYUP:

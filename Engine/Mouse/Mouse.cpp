@@ -3,8 +3,7 @@
 void Mouse::leftPressed(int x, int y)
 {
 	this->leftDown = true;
-	MouseEvent me(MouseEvent::EventType::LPress, x, y);
-	this->eventBuffer.push(me);
+	this->eventBuffer.push(MouseEvent(MouseEvent::EventType::LPress, x, y));
 }
 
 void Mouse::leftreleased(int x, int y)
