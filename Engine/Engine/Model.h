@@ -16,6 +16,14 @@ public:
 
 public:
 	std::vector<Vertex> getVertices();
+	unsigned int getnumVerts();
+	std::vector<unsigned int> getIndices();
+	unsigned int getnumIndices();
+
+public:
+	std::vector<DirectX::XMFLOAT3> vertexes;
+	std::vector<DirectX::XMFLOAT2> UVs;
+	std::vector<DirectX::XMFLOAT3> normals;
 
 private:
 	unsigned int i_numVerts = 0;

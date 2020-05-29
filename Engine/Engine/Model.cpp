@@ -82,6 +82,8 @@ bool Model::LoadModel(const std::string& filepath, std::vector<DirectX::XMFLOAT3
 		vertices[i]._position = tvertPositions[vertexposIndices[i] - 1];
 		vertices[i].TexCoord = tuvs[uvIndices[i] - 1];
 		vertices[i]._normal = tnorms[normIndices[i] - 1];
+
+		++i_numVerts;
 	}
 
 	return true;
@@ -90,4 +92,19 @@ bool Model::LoadModel(const std::string& filepath, std::vector<DirectX::XMFLOAT3
 std::vector<Vertex> Model::getVertices()
 {
 	return vertices;
+}
+
+unsigned int Model::getnumVerts()
+{
+	return i_numVerts;
+}
+
+std::vector<unsigned int> Model::getIndices()
+{
+	return vertexposIndices;
+}
+
+unsigned int Model::getnumIndices()
+{
+	return vertexposIndices.size();
 }

@@ -1,5 +1,9 @@
 #include "Graphics.h"
 
+
+
+
+
 bool Graphics::Initialize(HWND hwnd, int width, int height)
 {
 	this->windowwidth = width;
@@ -38,6 +42,8 @@ void Graphics::Render()
 	this->devicecontext->VSSetShader(this->vertexshader.getShader(), NULL, 0);
 	this->devicecontext->PSSetShader(this->pixelshader.getShader(), NULL, 0);
 
+	
+
 	UINT offset = 0;
 
 	XMMATRIX world = XMMatrixIdentity();
@@ -54,6 +60,28 @@ void Graphics::Render()
 	this->devicecontext->IASetIndexBuffer(indicesBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
 
 	this->devicecontext->DrawIndexed(indicesBuffer.BufferSize(), 0, 0);
+
+	// drawing imported mesh
+	this->devicecontext->IASetInputLayout(this->cubevertexshader.getLayout());
+	this->devicecontext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	this->devicecontext->VSSetShader(this->cubevertexshader.getShader(), NULL, 0);
+	this->devicecontext->PSSetShader(this->cubepixelshader.getShader(), NULL, 0);
+
+	UINT cubeoffset = 0;
+
+	world = XMMatrixIdentity();
+	constantBuffer.data.mat = world * camera.getviewMat() * camera.getprojectionMat();
+	constantBuffer.data.mat = XMMatrixTranspose(constantBuffer.data.mat);
+
+	if (!constantBuffer.ApplyChanges())
+		return;
+
+	this->devicecontext->VSSetConstantBuffers(0, 1, this->constantBuffer.GetAddressOf());
+
+	this->devicecontext->IASetVertexBuffers(1, 1, cubevertexBuffer.GetAddressOf(), cubevertexBuffer.StridePtr(), &cubeoffset);
+	this->devicecontext->IASetIndexBuffer(cubeindexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
+
+	this->devicecontext->DrawIndexed(cubeindexBuffer.BufferSize(), 0, 0);
 
 	// start the Dear ImGui frame
 	ImGui_ImplDX11_NewFrame();
@@ -103,11 +131,15 @@ bool Graphics::InitializeDirectX(HWND hwnd)
 	swapchaindescription.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
 	swapchaindescription.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
 
+#if defined(_DEBUG)
+	creationFlags |= D3D11_CREATE_DEVICE_DEBUG;
+#endif
+
 	HRESULT hr;
 	hr = D3D11CreateDeviceAndSwapChain( adapters[0].pAdapter, //IDXGI adapter
 								   D3D_DRIVER_TYPE_UNKNOWN,
 								   NULL, // for software driver type
-								   NULL, // flags for runtime layers
+								   creationFlags, // flags for runtime layers
 								   NULL, // feature levels array
 								   0, // # of feature levels in array
 								   D3D11_SDK_VERSION,
@@ -252,6 +284,19 @@ bool Graphics::InitializeShaders()
 
 	if (!pixelshader.Initialize(this->device, shaderfolder + L"PixelShader.cso"))
 		return false;
+
+	D3D11_INPUT_ELEMENT_DESC cubelayout[] =
+	{
+		{"POS", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
+		{"TEXTURE", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
+		{"NORMALS", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0}
+	};
+	UINT numcubeelements = _ARRAYSIZE(cubelayout);
+
+	if (!cubevertexshader.Initialize(this->device, shaderfolder + L"cubevertexShader.cso", cubelayout, numcubeelements))
+		return false;
+	if (!cubepixelshader.Initialize(this->device, shaderfolder + L"cubepixelShader.cso"))
+		return false;
 	
 
 	return true;
@@ -300,10 +345,23 @@ bool Graphics::InitializeScene()
 		return false;
 	}
 
-	bool load = model.LoadModel("../Engine/meshes/cube.obj", vertexes, UVs, normals);
+	// initializing cube mesh
+	bool load = model.LoadModel("../Engine/meshes/cube.obj", model.vertexes, model.UVs, model.normals);
 	if (!load)
 	{
 		ErrorLogger::Log("Failed to load mesh object");
+		return false;
+	}
+	hr = this->cubevertexBuffer.Initialize(this->device.Get(), &model.vertexes, sizeof(model.vertexes));
+	if (FAILED(hr))
+	{
+		ErrorLogger::Log(hr, "Failed to initialize cube vertex buffer");
+		return false;
+	}
+	hr = this->cubeindexBuffer.Initialize(this->device.Get(), &model.getIndices(), sizeof(model.getIndices()));
+	if (FAILED(hr))
+	{
+		ErrorLogger::Log(hr, "Failed to initialize cube index buffer");
 		return false;
 	}
 

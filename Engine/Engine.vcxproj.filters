@@ -168,5 +168,7 @@
   <ItemGroup>
     <FxCompile Include="Graphics\Shaders\VertexShader.hlsl" />
     <FxCompile Include="Graphics\Shaders\PixelShader.hlsl" />
+    <FxCompile Include="Graphics\Shaders\cubevertexShader.hlsl" />
+    <FxCompile Include="Graphics\Shaders\cubepixelShader.hlsl" />
   </ItemGroup>
 </Project>
