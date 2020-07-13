@@ -2,11 +2,10 @@
 #include <wrl/client.h>
 #include <vector>
 
-template<class T>
 class IndexBuffer
 {
 private:
-	IndexBuffer(const IndexBuffer<T>& rhs);
+	IndexBuffer(const IndexBuffer& rhs);
 
 private:
 	Microsoft::WRL::ComPtr<ID3D11Buffer> buffer;
@@ -29,14 +28,14 @@ public:
 		return this->buffersize;
 	}
 
-	HRESULT Initialize(ID3D11Device* device, T* data, UINT numIndices)
+	HRESULT Initialize(ID3D11Device* device, DWORD* data, UINT numIndices)
 	{
 		this->buffersize = numIndices;
 
 		D3D11_BUFFER_DESC indexbufferdesc;
 		ZeroMemory(&indexbufferdesc, sizeof(indexbufferdesc));
 		indexbufferdesc.Usage = D3D11_USAGE_DEFAULT;
-		indexbufferdesc.ByteWidth = sizeof(T) * numIndices;
+		indexbufferdesc.ByteWidth = sizeof(DWORD) * numIndices;
 		indexbufferdesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
 		indexbufferdesc.CPUAccessFlags = 0;
 		indexbufferdesc.MiscFlags = 0;

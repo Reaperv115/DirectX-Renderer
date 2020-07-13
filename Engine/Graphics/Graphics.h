@@ -31,16 +31,10 @@ private:
 	VertexShader vertexshader;
 	PixelShader pixelshader;
 
-	VertexShader cubevertexshader;
-	PixelShader cubepixelshader;
-
 	ConstantBuffer<CB_VS_VertexShader> constantBuffer;
 
 	VertexBuffer<Vertex> vertexBuffer;
-	IndexBuffer<DWORD> indicesBuffer;
-
-	VertexBuffer<std::vector<XMFLOAT3>> cubevertexBuffer;
-	IndexBuffer<std::vector<unsigned int>> cubeindexBuffer;
+	IndexBuffer indicesBuffer;
 
 	Microsoft::WRL::ComPtr<ID3D11DepthStencilView> depthstencilView;
 	Microsoft::WRL::ComPtr<ID3D11Texture2D> depthstencilBuffer;
@@ -51,8 +45,6 @@ private:
 
 	int windowwidth;
 	int windowheight;
-
-	Model model;
 	
 	UINT creationFlags = D3D11_CREATE_DEVICE_BGRA_SUPPORT;
 

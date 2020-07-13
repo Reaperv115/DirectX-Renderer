@@ -61,28 +61,6 @@ void Graphics::Render()
 
 	this->devicecontext->DrawIndexed(indicesBuffer.BufferSize(), 0, 0);
 
-	// drawing imported mesh
-	this->devicecontext->IASetInputLayout(this->cubevertexshader.getLayout());
-	this->devicecontext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	this->devicecontext->VSSetShader(this->cubevertexshader.getShader(), NULL, 0);
-	this->devicecontext->PSSetShader(this->cubepixelshader.getShader(), NULL, 0);
-
-	UINT cubeoffset = 0;
-
-	world = XMMatrixIdentity();
-	constantBuffer.data.mat = world * camera.getviewMat() * camera.getprojectionMat();
-	constantBuffer.data.mat = XMMatrixTranspose(constantBuffer.data.mat);
-
-	if (!constantBuffer.ApplyChanges())
-		return;
-
-	this->devicecontext->VSSetConstantBuffers(0, 1, this->constantBuffer.GetAddressOf());
-
-	this->devicecontext->IASetVertexBuffers(1, 1, cubevertexBuffer.GetAddressOf(), cubevertexBuffer.StridePtr(), &cubeoffset);
-	this->devicecontext->IASetIndexBuffer(cubeindexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
-
-	this->devicecontext->DrawIndexed(cubeindexBuffer.BufferSize(), 0, 0);
-
 	// start the Dear ImGui frame
 	ImGui_ImplDX11_NewFrame();
 	ImGui_ImplWin32_NewFrame();
@@ -284,19 +262,6 @@ bool Graphics::InitializeShaders()
 
 	if (!pixelshader.Initialize(this->device, shaderfolder + L"PixelShader.cso"))
 		return false;
-
-	D3D11_INPUT_ELEMENT_DESC cubelayout[] =
-	{
-		{"POS", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
-		{"TEXTURE", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
-		{"NORMALS", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0}
-	};
-	UINT numcubeelements = _ARRAYSIZE(cubelayout);
-
-	if (!cubevertexshader.Initialize(this->device, shaderfolder + L"cubevertexShader.cso", cubelayout, numcubeelements))
-		return false;
-	if (!cubepixelshader.Initialize(this->device, shaderfolder + L"cubepixelShader.cso"))
-		return false;
 	
 
 	return true;
@@ -307,10 +272,14 @@ bool Graphics::InitializeScene()
 	// red triangle
 	Vertex vertex[] =
 	{
-		Vertex(-0.5f, -0.5f, 0.0f, 0.0f, 1.0f), // bottom left - 0
-		Vertex(-0.5f,  0.5f, 0.0f, 0.0f, 0.0f), // top left    - 1
-		Vertex( 0.5f,  0.5f, 0.0f, 1.0f, 0.0f), // top right   - 2
-		Vertex(	0.5f, -0.5f, 0.0f, 1.0f, 1.0f) // bottom right - 3
+		Vertex(-0.5f, -0.5f, -0.5f, 0.0f, 1.0f), //front bottom left - 0
+		Vertex(-0.5f,  0.5f, -0.5f, 0.0f, 0.0f), //front top left    - 1
+		Vertex( 0.5f,  0.5f, -0.5f, 1.0f, 0.0f), //front top right   - 2
+		Vertex(	0.5f, -0.5f, -0.5f, 1.0f, 1.0f), //front bottom right - 3
+		Vertex(-0.5f, -0.5f, 0.5f, 0.0f, 1.0f), //back bottom left - 0
+		Vertex(-0.5f,  0.5f, 0.5f, 0.0f, 0.0f), //back top left    - 1
+		Vertex(0.5f,  0.5f, 0.5f, 1.0f, 0.0f), //back top right   - 2
+		Vertex(0.5f, -0.5f, 0.5f, 1.0f, 1.0f) //back bottom right - 3
 	};
 
 
@@ -323,8 +292,18 @@ bool Graphics::InitializeScene()
 
 	DWORD indices[] =
 	{
-		0, 1, 2,
-		0, 2, 3
+		0, 1, 2, // front
+		0, 2, 3,// front
+		4, 7, 6, //back
+		4, 6, 5, //back
+		3, 2, 6, // right side
+		3, 6, 7, // right side
+		4, 5, 1, // left side
+		4, 1, 0, // left side
+		1, 5, 6, // top
+		1, 6, 2, // top
+		0, 3, 7, // bottom
+		0, 7, 4, // bottom
 	};
 
 	
@@ -342,26 +321,6 @@ bool Graphics::InitializeScene()
 	if (FAILED(hr))
 	{
 		ErrorLogger::Log(hr, "failed to create WICTexture");
-		return false;
-	}
-
-	// initializing cube mesh
-	bool load = model.LoadModel("../Engine/meshes/cube.obj", model.vertexes, model.UVs, model.normals);
-	if (!load)
-	{
-		ErrorLogger::Log("Failed to load mesh object");
-		return false;
-	}
-	hr = this->cubevertexBuffer.Initialize(this->device.Get(), &model.vertexes, sizeof(model.vertexes));
-	if (FAILED(hr))
-	{
-		ErrorLogger::Log(hr, "Failed to initialize cube vertex buffer");
-		return false;
-	}
-	hr = this->cubeindexBuffer.Initialize(this->device.Get(), &model.getIndices(), sizeof(model.getIndices()));
-	if (FAILED(hr))
-	{
-		ErrorLogger::Log(hr, "Failed to initialize cube index buffer");
 		return false;
 	}
 
