@@ -43,23 +43,8 @@ void Graphics::Render()
 	this->devicecontext->PSSetShader(this->pixelshader.getShader(), NULL, 0);
 
 	
-
-	UINT offset = 0;
-
-	XMMATRIX world = XMMatrixIdentity();
-	constantBuffer.data.mat = world * camera.getviewMat() * camera.getprojectionMat();
-	constantBuffer.data.mat = XMMatrixTranspose(constantBuffer.data.mat);
-
-	if (!constantBuffer.ApplyChanges())
-		return;
-
-	this->devicecontext->VSSetConstantBuffers(0, 1, this->constantBuffer.GetAddressOf());
-
-	this->devicecontext->PSSetShaderResources(0, 1, this->texture.GetAddressOf());
-	this->devicecontext->IASetVertexBuffers(0, 1, vertexBuffer.GetAddressOf(), vertexBuffer.StridePtr(), &offset);
-	this->devicecontext->IASetIndexBuffer(indicesBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
-
-	this->devicecontext->DrawIndexed(indicesBuffer.BufferSize(), 0, 0);
+	this->model.Draw(camera.getviewMat() * camera.getprojectionMat());
+	
 
 	// start the Dear ImGui frame
 	ImGui_ImplDX11_NewFrame();
@@ -269,55 +254,8 @@ bool Graphics::InitializeShaders()
 
 bool Graphics::InitializeScene()
 {
-	// red triangle
-	Vertex vertex[] =
-	{
-		Vertex(-0.5f, -0.5f, -0.5f, 0.0f, 1.0f), //front bottom left - 0
-		Vertex(-0.5f,  0.5f, -0.5f, 0.0f, 0.0f), //front top left    - 1
-		Vertex( 0.5f,  0.5f, -0.5f, 1.0f, 0.0f), //front top right   - 2
-		Vertex(	0.5f, -0.5f, -0.5f, 1.0f, 1.0f), //front bottom right - 3
-		Vertex(-0.5f, -0.5f, 0.5f, 0.0f, 1.0f), //back bottom left - 0
-		Vertex(-0.5f,  0.5f, 0.5f, 0.0f, 0.0f), //back top left    - 1
-		Vertex(0.5f,  0.5f, 0.5f, 1.0f, 0.0f), //back top right   - 2
-		Vertex(0.5f, -0.5f, 0.5f, 1.0f, 1.0f) //back bottom right - 3
-	};
-
-
-	HRESULT hr = this->vertexBuffer.Initialize(this->device.Get(), vertex, _ARRAYSIZE(vertex));
-	if (FAILED(hr))
-	{
-		ErrorLogger::Log(hr, "Failed to create vertex buffer");
-		return false;
-	}
-
-	DWORD indices[] =
-	{
-		0, 1, 2, // front
-		0, 2, 3,// front
-		4, 7, 6, //back
-		4, 6, 5, //back
-		3, 2, 6, // right side
-		3, 6, 7, // right side
-		4, 5, 1, // left side
-		4, 1, 0, // left side
-		1, 5, 6, // top
-		1, 6, 2, // top
-		0, 3, 7, // bottom
-		0, 7, 4, // bottom
-	};
-
-	
-
-	hr = this->indicesBuffer.Initialize(this->device.Get(), indices, _ARRAYSIZE(indices));
-	if (FAILED(hr))
-	{
-		ErrorLogger::Log(hr, "Failed to create vertex buffer");
-		return false;
-	}
-
-	
 	// load texture
-	hr = DirectX::CreateWICTextureFromFile(this->device.Get(), L"textures/bloody slayer mark.jpg", nullptr, texture.GetAddressOf());
+	HRESULT hr = DirectX::CreateWICTextureFromFile(this->device.Get(), L"textures/bloody slayer mark.jpg", nullptr, slayersmark.GetAddressOf());
 	if (FAILED(hr))
 	{
 		ErrorLogger::Log(hr, "failed to create WICTexture");
@@ -325,12 +263,16 @@ bool Graphics::InitializeScene()
 	}
 
 	// Initialize constant buffer(s)
-	hr = this->constantBuffer.Initialize(this->device.Get(), this->devicecontext.Get());
+	hr = this->VSconstantBuffer.Initialize(this->device.Get(), this->devicecontext.Get());
 	if (FAILED(hr))
 	{
 		ErrorLogger::Log(hr, "Failed to initialize the constant buffer");
 		return false;
 	}
+
+	// Initialize Models
+	if (model.Initialize(this->device.Get(), this->devicecontext.Get(), this->slayersmark.Get(), VSconstantBuffer))
+		return false;
 
 	camera.setPosition(0.0f, 0.0f, -2.0f);
 	camera.setprojectionValues(90.0f, static_cast<float>(windowwidth) / static_cast<float>(windowheight), 0.1f, 1000.0f);
