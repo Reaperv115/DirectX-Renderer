@@ -1,11 +1,7 @@
 #pragma once
 #include "ReadAdapter.h"
 #include "Shader.h"
-#include "Vertex.h"
 #include <WICTextureLoader.h>
-#include "VertexBuffer.h"
-#include "IndexBuffer.h"
-#include "ConstantBuffer.h"
 #include "Camera.h"
 #include "ImGUI/imgui.h"
 #include "ImGUI/imgui_impl_win32.h"
@@ -33,8 +29,7 @@ private:
 
 	ConstantBuffer<CB_VS_VertexShader> constantBuffer;
 
-	VertexBuffer<Vertex> vertexBuffer;
-	IndexBuffer indicesBuffer;
+	Model model;
 
 	Microsoft::WRL::ComPtr<ID3D11DepthStencilView> depthstencilView;
 	Microsoft::WRL::ComPtr<ID3D11Texture2D> depthstencilBuffer;

@@ -1,21 +1,57 @@
-﻿  Graphics.cpp
-E:\Dev\DirectX-Renderer\Engine\Graphics\Graphics.cpp(194,23): warning C4244: '=': conversion from 'int' to 'FLOAT', possible loss of data
-E:\Dev\DirectX-Renderer\Engine\Graphics\Graphics.cpp(195,24): warning C4244: '=': conversion from 'int' to 'FLOAT', possible loss of data
+﻿  compilation object save succeeded; see E:\Dev\DirectX-Renderer\x64\Debug\cubepixelShader.cso
+  compilation object save succeeded; see E:\Dev\DirectX-Renderer\x64\Debug\cubevertexShader.cso
+E:\Dev\DirectX-Renderer\Engine\Graphics\Shaders\PixelShader.hlsl(12,12-76): warning X3206: implicit truncation of vector type
+  
+  compilation object save succeeded; see E:\Dev\DirectX-Renderer\x64\Debug\PixelShader.cso
+E:\Dev\DirectX-Renderer\Engine\Graphics\Shaders\VertexShader.hlsl(25,5-44): warning X3206: implicit truncation of vector type
+  
+  compilation object save succeeded; see E:\Dev\DirectX-Renderer\x64\Debug\VertexShader.cso
+  Camera.cpp
+E:\Dev\DirectX-Renderer\Engine\Graphics\Camera.cpp(120,30): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+E:\Dev\DirectX-Renderer\Engine\Graphics\Camera.cpp(120,24): warning C4244: 'initializing': conversion from 'double' to 'const float', possible loss of data
+E:\Dev\DirectX-Renderer\Engine\Graphics\Camera.cpp(121,15): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+E:\Dev\DirectX-Renderer\Engine\Graphics\Camera.cpp(127,13): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+  Engine.cpp
+  Graphics.cpp
+E:\Dev\DirectX-Renderer\Engine\Graphics\Graphics.cpp(182,23): warning C4244: '=': conversion from 'int' to 'FLOAT', possible loss of data
+E:\Dev\DirectX-Renderer\Engine\Graphics\Graphics.cpp(183,24): warning C4244: '=': conversion from 'int' to 'FLOAT', possible loss of data
+  imgui.cpp
+  imgui_draw.cpp
+  imgui_impl_dx11.cpp
+  imgui_impl_win32.cpp
+  imgui_widgets.cpp
+  Keyboard.cpp
+  Model.cpp
 E:\Visual Studio 2019\VC\Tools\MSVC\14.26.28801\include\memory(2067,59): warning C4267: 'initializing': conversion from 'size_t' to '_Ty', possible loss of data
           with
           [
               _Ty=UINT
           ]
-E:\Dev\DirectX-Renderer\Engine\Graphics\VertexBuffer.h(46): message : see reference to function template instantiation 'std::unique_ptr<UINT,std::default_delete<UINT>> std::make_unique<UINT,size_t,0>(size_t &&)' being compiled
-E:\Dev\DirectX-Renderer\Engine\Graphics\VertexBuffer.h(44): message : while compiling class template member function 'HRESULT VertexBuffer<Vertex>::Initialize(ID3D11Device *,T *,UINT)'
+E:\Dev\DirectX-Renderer\Engine\Graphics\VertexBuffer.h(47): message : see reference to function template instantiation 'std::unique_ptr<UINT,std::default_delete<UINT>> std::make_unique<UINT,size_t,0>(size_t &&)' being compiled
+E:\Dev\DirectX-Renderer\Engine\Graphics\VertexBuffer.h(45): message : while compiling class template member function 'HRESULT VertexBuffer<Vertex>::Initialize(ID3D11Device *,T *,UINT)'
           with
           [
               T=Vertex
           ]
-E:\Dev\DirectX-Renderer\Engine\Graphics\Graphics.cpp(286): message : see reference to function template instantiation 'HRESULT VertexBuffer<Vertex>::Initialize(ID3D11Device *,T *,UINT)' being compiled
+E:\Dev\DirectX-Renderer\Engine\Engine\Model.cpp(24): message : see reference to function template instantiation 'HRESULT VertexBuffer<Vertex>::Initialize(ID3D11Device *,T *,UINT)' being compiled
           with
           [
               T=Vertex
           ]
-E:\Dev\DirectX-Renderer\Engine\Graphics\Graphics.h(36): message : see reference to class template instantiation 'VertexBuffer<Vertex>' being compiled
+E:\Dev\DirectX-Renderer\Engine\Engine\Model.h(24): message : see reference to class template instantiation 'VertexBuffer<Vertex>' being compiled
+  MouseEvent.cpp
+  Mouse.cpp
+  ReadAdapter.cpp
+  Shader.cpp
+  ErrorLogger.cpp
+  KeyBoardEvent.cpp
+  main.cpp
+  RenderWindow.cpp
+  StringConverter.cpp
+  WindowContainer.cpp
+E:\Dev\DirectX-Renderer\Engine\Windows\WindowContainer.cpp(145,134): warning C4390: ';': empty controlled statement found; is this the intent?
+  Generating Code...
+E:\Dev\DirectX-Renderer\Engine\Windows\WindowContainer.cpp(160): warning C4715: 'WindowContainer::WindowProc': not all control paths return a value
+DirectXTK.lib(pch.obj) : warning LNK4099: PDB 'DirectXTK.pdb' was not found with 'DirectXTK.lib(pch.obj)' or at 'E:\Dev\DirectX-Renderer\x64\Debug\DirectXTK.pdb'; linking object as if no debug info
+DirectXTK.lib(WICTextureLoader.obj) : warning LNK4099: PDB 'DirectXTK.pdb' was not found with 'DirectXTK.lib(WICTextureLoader.obj)' or at 'E:\Dev\DirectX-Renderer\x64\Debug\DirectXTK.pdb'; linking object as if no debug info
   Engine.vcxproj -> E:\Dev\DirectX-Renderer\x64\Debug\Engine.exe

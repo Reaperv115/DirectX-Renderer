@@ -72,3 +72,8 @@ void Engine::Render()
 {
 	gfx.Render();
 }
+
+void Engine::releaseData()
+{
+	
+}
