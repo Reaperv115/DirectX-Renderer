@@ -276,8 +276,10 @@ bool Graphics::InitializeScene()
 		return false;
 	}
 
-	if (!model.Initialize(this->device.Get(), this->devicecontext.Get(), this->texture.Get(), constantBuffer))
+	if (!model.Initialize("../meshes/cube.obj", this->device.Get(), this->devicecontext.Get(), this->texture.Get(), constantBuffer))
 		return false;
+
+	model.setPosition(2.0f, 0.0f, 0.0f);
 
 	camera.setPosition(0.0f, 0.0f, -2.0f);
 	camera.setprojectionValues(90.0f, static_cast<float>(windowwidth) / static_cast<float>(windowheight), 0.1f, 1000.0f);

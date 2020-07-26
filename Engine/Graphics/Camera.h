@@ -17,12 +17,16 @@ public:
 	const XMFLOAT3& getrotationFloat3() const;
 
 	void setPosition(const XMVECTOR& pos);
+	void setPosition(const XMFLOAT3& pos);
 	void setPosition(float x, float y, float z);
 	void adjustPosition(const XMVECTOR& pos);
+	void adjustPosition(const XMFLOAT3& pos);
 	void adjustPosition(float x, float y, float z);
 	void setRotation(const XMVECTOR& rot);
+	void setRotation(const XMFLOAT3& rot);
 	void setRotation(float x, float y, float z);
 	void adjustRotation(const XMVECTOR& rot);
+	void adjustRotation(const XMFLOAT3& rot);
 	void adjustRotation(float x, float y, float z);
 	void setlookatPos(XMFLOAT3 lookatPos);
 	const XMVECTOR& getforwardVector();

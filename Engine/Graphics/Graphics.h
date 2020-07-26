@@ -14,6 +14,7 @@ public:
 	bool Initialize(HWND hwnd, int width, int height);
 	void Render();
 	Camera camera;
+	Model model;
 private:
 	bool InitializeDirectX(HWND hwnd);
 	bool InitializeShaders();
@@ -29,7 +30,7 @@ private:
 
 	ConstantBuffer<CB_VS_VertexShader> constantBuffer;
 
-	Model model;
+	
 
 	Microsoft::WRL::ComPtr<ID3D11DepthStencilView> depthstencilView;
 	Microsoft::WRL::ComPtr<ID3D11Texture2D> depthstencilBuffer;
