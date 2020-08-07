@@ -10,6 +10,8 @@ bool Model::Initialize(const std::string& filepath, ID3D11Device* device, ID3D11
 	if (!this->loadModel(filepath))
 		return false;
 
+	
+
 	this->setPosition(0.0f, 0.0f, 0.0f);
 	this->setRotation(0.0f, 0.0f, 0.0f);
 	this->updateworldMat();
@@ -24,15 +26,14 @@ void Model::setTexture(ID3D11ShaderResourceView* texture)
 void Model::Draw(const XMMATRIX& viewprojectionMatrix)
 {
 	this->cb_vs_vertexshader->data.mat = this->worldMatrix * viewprojectionMatrix;
-	this->cb_vs_vertexshader->data.mat = XMMatrixTranspose(this->cb_vs_vertexshader->data.mat);
 	this->cb_vs_vertexshader->ApplyChanges();
 	this->devicecontext->VSSetConstantBuffers(0, 1, this->cb_vs_vertexshader->GetAddressOf());
-
 	this->devicecontext->PSSetShaderResources(0, 1, &this->texture);
-	this->devicecontext->IASetIndexBuffer(this->indexBuffer.Get(), DXGI_FORMAT::DXGI_FORMAT_R32_UINT, 0);
-	UINT offset = 0;
-	this->devicecontext->IASetVertexBuffers(0, 1, this->vertexBuffer.GetAddressOf(), this->vertexBuffer.StridePtr(), &offset);
-	this->devicecontext->DrawIndexed(this->indexBuffer.BufferSize(), 0, 0);
+
+	for (int i = 0; i < meshes.size(); ++i)
+	{
+		meshes[i].Draw();
+	}
 }
 
 bool Model::loadModel(const std::string& filepath)
@@ -73,9 +74,44 @@ bool Model::loadModel(const std::string& filepath)
 			ss >> tvec3.x >> tvec3.y >> tvec3.z;
 			vertexNormals.push_back(tvec3);
 		}
+		else if (prefix == "f")
+		{
+			int counter = 0;
+			while (ss >> tint)
+			{
+				if (counter == 0)
+					vertexposIndices.push_back(tint);
+				if (counter == 1)
+					vertextexIndices.push_back(tint);
+				else if (counter == 2)
+					vertexnormalIndices.push_back(tint);
+
+				if (ss.peek() == '/')
+				{
+					++counter;
+					ss.ignore(1, '/');
+				}
+				else if (ss.peek() == ' ')
+				{
+					++counter;
+					ss.ignore(1, ' ');
+				}
+
+				if (counter > 2)
+					counter = 0;
+			}
+		}
+
+		
 	}
 
-	return false;
+	vertices.resize(vertexposIndices.size(), Vertex());
+	for (int i = 0; i < vertexposIndices.size(); ++i)
+	{
+		vertices[i]._position = vertexposIndices[i];
+	}
+
+	return true;
 }
 
 void Model::updateworldMat()

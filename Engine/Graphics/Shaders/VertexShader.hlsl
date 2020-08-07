@@ -1,4 +1,4 @@
-//#pragma pack_matrix(row_major) uncomment to enable row-major matrix math
+#pragma pack_matrix(row_major)
 
 cbuffer Matrices : register(b0)
 {

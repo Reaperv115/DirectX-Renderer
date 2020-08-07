@@ -15,9 +15,9 @@ public:
 	std::vector<XMFLOAT2> vertexTexcoord;
 	std::vector<XMFLOAT3> vertexNormals;
 
-	std::vector<int> vertexposIndices;
-	std::vector<int> vertextexIndices;
-	std::vector<int> vertexnormalIndices;
+	std::vector<DWORD> vertexposIndices;
+	std::vector<DWORD> vertextexIndices;
+	std::vector<DWORD> vertexnormalIndices;
 
 	std::vector<Vertex> vertices;
 

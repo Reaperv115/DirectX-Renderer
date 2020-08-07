@@ -1,9 +1,5 @@
 #include "Graphics.h"
 
-
-
-
-
 bool Graphics::Initialize(HWND hwnd, int width, int height)
 {
 	this->windowwidth = width;
@@ -258,8 +254,6 @@ bool Graphics::InitializeShaders()
 bool Graphics::InitializeScene()
 {
 	
-
-	
 	// load texture
 	HRESULT hr = DirectX::CreateWICTextureFromFile(this->device.Get(), L"textures/bloody slayer mark.jpg", nullptr, texture.GetAddressOf());
 	if (FAILED(hr))
@@ -276,7 +270,7 @@ bool Graphics::InitializeScene()
 		return false;
 	}
 
-	if (!model.Initialize("../meshes/cube.obj", this->device.Get(), this->devicecontext.Get(), this->texture.Get(), constantBuffer))
+	if (!model.Initialize("cube.obj", this->device.Get(), this->devicecontext.Get(), this->texture.Get(), constantBuffer))
 		return false;
 
 	model.setPosition(2.0f, 0.0f, 0.0f);
