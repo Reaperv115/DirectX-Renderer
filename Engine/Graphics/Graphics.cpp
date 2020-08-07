@@ -39,6 +39,8 @@ void Graphics::Render()
 	this->devicecontext->PSSetShader(this->pixelshader.getShader(), NULL, 0);
 
 	
+	this->model.Draw(camera.getviewMat() * camera.getprojectionMat());
+	
 
 	UINT offset = 0;
 
@@ -255,7 +257,11 @@ bool Graphics::InitializeScene()
 {
 	
 	// load texture
+<<<<<<< .mine
 	HRESULT hr = DirectX::CreateWICTextureFromFile(this->device.Get(), L"textures/bloody slayer mark.jpg", nullptr, texture.GetAddressOf());
+=======
+	HRESULT hr = DirectX::CreateWICTextureFromFile(this->device.Get(), L"textures/bloody slayer mark.jpg", nullptr, slayersmark.GetAddressOf());
+>>>>>>> .theirs
 	if (FAILED(hr))
 	{
 		ErrorLogger::Log(hr, "failed to create WICTexture");
@@ -263,7 +269,7 @@ bool Graphics::InitializeScene()
 	}
 
 	// Initialize constant buffer(s)
-	hr = this->constantBuffer.Initialize(this->device.Get(), this->devicecontext.Get());
+	hr = this->VSconstantBuffer.Initialize(this->device.Get(), this->devicecontext.Get());
 	if (FAILED(hr))
 	{
 		ErrorLogger::Log(hr, "Failed to initialize the constant buffer");

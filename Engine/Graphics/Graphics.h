@@ -28,16 +28,19 @@ private:
 	VertexShader vertexshader;
 	PixelShader pixelshader;
 
-	ConstantBuffer<CB_VS_VertexShader> constantBuffer;
+	ConstantBuffer<CB_VS_VertexShader> VSconstantBuffer;
 
-	
+	Model model;
 
 	Microsoft::WRL::ComPtr<ID3D11DepthStencilView> depthstencilView;
 	Microsoft::WRL::ComPtr<ID3D11Texture2D> depthstencilBuffer;
 	Microsoft::WRL::ComPtr<ID3D11DepthStencilState> depthstencilState;
 	Microsoft::WRL::ComPtr<ID3D11RasterizerState> rasterizerState;
 	Microsoft::WRL::ComPtr<ID3D11SamplerState> samplerState;
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> texture;
+
+	// TEXTURES
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> slayersmark;
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> modelTexture;
 
 	int windowwidth;
 	int windowheight;
