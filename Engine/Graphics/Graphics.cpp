@@ -257,11 +257,7 @@ bool Graphics::InitializeScene()
 {
 	
 	// load texture
-<<<<<<< .mine
-	HRESULT hr = DirectX::CreateWICTextureFromFile(this->device.Get(), L"textures/bloody slayer mark.jpg", nullptr, texture.GetAddressOf());
-=======
 	HRESULT hr = DirectX::CreateWICTextureFromFile(this->device.Get(), L"textures/bloody slayer mark.jpg", nullptr, slayersmark.GetAddressOf());
->>>>>>> .theirs
 	if (FAILED(hr))
 	{
 		ErrorLogger::Log(hr, "failed to create WICTexture");
@@ -276,7 +272,7 @@ bool Graphics::InitializeScene()
 		return false;
 	}
 
-	if (!model.Initialize("cube.obj", this->device.Get(), this->devicecontext.Get(), this->texture.Get(), constantBuffer))
+	if (!model.Initialize("cube.obj", this->device.Get(), this->devicecontext.Get(), this->modelTexture.Get(), VSconstantBuffer))
 		return false;
 
 	model.setPosition(2.0f, 0.0f, 0.0f);

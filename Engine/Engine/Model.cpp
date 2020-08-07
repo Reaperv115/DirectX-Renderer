@@ -108,7 +108,7 @@ bool Model::loadModel(const std::string& filepath)
 	vertices.resize(vertexposIndices.size(), Vertex());
 	for (int i = 0; i < vertexposIndices.size(); ++i)
 	{
-		vertices[i]._position = vertexposIndices[i];
+		vertices[i]._position = vertexPositions[i];
 	}
 
 	return true;
